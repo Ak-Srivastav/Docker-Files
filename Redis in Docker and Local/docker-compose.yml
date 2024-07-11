@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+
+  redis-ds:
+    image: redis:6.2.5
+    command: redis-server
+    volumes:
+      - ./redis:/data
+    ports:
+      - ${DS_PORT}:6379
+    environment:
+      - REDIS_PASSWORD=${DS_PASSWORD}
+      - REDIS_PORT=${DS_PORT}
+    networks:
+      - yournetworkname
+
+  redis-ds-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=${DS_HOST}
+      - REDIS_HOST=${DS_HOST}
+      - REDIS_PORT=${DS_HOST}:${DS_PORT}
+      - REDIS_PASSWORD=${DS_PASSWORD}
+      - HTTP_USER=${DS_USER}
+      - HTTP_PASSWORD=${DS_PASSWORD}
+    ports:
+      - ${GUI_PORT}:8081
+    depends_on:
+      - redis-ds
+    networks:
+      - yournetworkname
+
+networks:
+  yournetworkname:
+    external: true
+
+#GUI  
+#Login using DS_USER, DS_PASSWORD
+
+#Inside Docker 
+#Address : DS_HOST:DS_PORT
+#Password : DS_PASSWORD
+
+#Outside Docker 
+#Address localhost:6379
+#Password : DS_PASSWORD
+
